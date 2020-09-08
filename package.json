@@ -1,0 +1,21 @@
+{
+  "name": "Tici-Taca-Toe",
+  "version": "0.0.1",
+  "description": "Ultimate Tic-Tac-Toe",
+  "author": "kyechan99",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kyechan99/Tici-Taca-Toe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyechan99/Tici-Taca-Toe.git"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
