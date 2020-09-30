@@ -17,14 +17,29 @@ io.on('connection', (socket) => {
 	console.log(socket.id + ' user connected');
 	
 	socket.on('joinRoom', (roomCode) => {
-		socket.join(roomCode);
-		console.log(socket.id + ' join in ' + roomCode);
-		// socket.sockets.clients(roomCode);io.sockets.clients('room');
-		// console.log(roomCode + ' users :  ' + io.sockets.clients(roomCode));
+		io.of('/').in(roomCode).clients((err, clients) => {
+			if (clients.length < 2) {
+				socket.join(roomCode);
+				console.log(socket.id + ' join in ' + roomCode);
+				
+				if (clients.length > 0) {
+					// Who is first? random
+					let random = Math.floor(Math.random() * 2);
+					if (random === 0)
+						io.to(roomCode).emit('game start', clients[0]);
+					else
+						io.to(roomCode).emit('game start', socket.id);
+				}
+			} else {
+				// Full Memeber
+				io.to(socket.id).emit('outroom');
+			}
+			console.log(clients);
+		});
 	});
 	socket.on('chat message', (roomCode, msg) => {
 		console.log('message: ' + msg);
-		io.to(roomCode).emit('chat message', msg);
+		io.to(roomCode).emit('chat message', socket.id, msg);
 	});
 	socket.on('boardClick', (msg) => {
 		console.log('boardClick: ' + msg);

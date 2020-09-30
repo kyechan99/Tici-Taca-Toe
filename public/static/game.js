@@ -2,8 +2,7 @@ var app = new Vue({
 	el: '#app',
 	data: {
 		BOARD_SIZE: 3,
-		myName: 'U0',
-		myTurn: true,
+		myTurn: false,
 		beforeArea: 0,
 		roomCode: '',
 	},
@@ -19,8 +18,8 @@ var app = new Vue({
 		// console.log(this.$socket.sockets.clients(this.roomCode));
 		
 		
-		this.$socket.on('chat message', (msg)=> {
-			$('#messages').append($('<li>').text(this.$socket.id + msg));
+		this.$socket.on('chat message', (id, msg) => {
+			$('#messages').append($('<li>').text(id + msg));
 		})
 		this.$socket.on('boardClick', (msg) => {
 			$('#messages').append($('<li>').text(msg));
@@ -39,7 +38,17 @@ var app = new Vue({
 					$('#board-area-' + i).removeClass('disabled');
 				}
 			}
+			this.myTurn = !this.myTurn;
 		});
+		this.$socket.on('game start', (firstSocketId) => {
+			if (firstSocketId === this.$socket.id)
+				this.myTurn = true;
+			else
+				this.myTurn = false;
+		});
+		this.$socket.on('outroom', () => {
+			window.location.href = '/';
+		})
 	},
 	methods: {
 		boardClick(msg) {

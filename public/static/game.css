@@ -1,6 +1,13 @@
 form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
 form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 
+.lock-board-area {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+}
+
 .game-col {
 	/* background-color: tomato; */
 }
