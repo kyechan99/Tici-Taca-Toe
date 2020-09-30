@@ -18,8 +18,8 @@
 					<div>
 					<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
 						<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
-							<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${boardAreaNum(n, m)}`)" :id="`${i}${n}${m}${boardAreaNum(n, m)}`">
-								{{ i }}:({{ n }},{{ m }}_{{ boardAreaNum(n, m) }})
+							<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)" :id="`${i}${n}${m}${getBoardAreaNum(n, m)}`">
+								{{ i }}:({{ n }},{{ m }}_{{ getBoardAreaNum(n, m) }})
 							</button>
 						</div>
 					</div>

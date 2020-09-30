@@ -16,7 +16,7 @@ io.on('connection', (socket) => {
 	socket.broadcast.emit('hi');
 	console.log(socket.id + ' user connected');
 	
-	socket.on('joinRoom', (roomCode) => {
+	socket.on('join room', (roomCode) => {
 		io.of('/').in(roomCode).clients((err, clients) => {
 			if (clients.length < 2) {
 				socket.join(roomCode);
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
 				}
 			} else {
 				// Full Memeber
-				io.to(socket.id).emit('outroom');
+				io.to(socket.id).emit('out room');
 			}
 			console.log(clients);
 		});
@@ -41,10 +41,7 @@ io.on('connection', (socket) => {
 		console.log('message: ' + msg);
 		io.to(roomCode).emit('chat message', socket.id, msg);
 	});
-	socket.on('system message', () => {
-		
-	});
-	socket.on('boardClick', (msg) => {
+	socket.on('board click', (msg) => {
 		console.log('boardClick: ' + msg);
 		io.emit('boardClick', msg);
 	});
