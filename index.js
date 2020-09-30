@@ -16,6 +16,10 @@ io.on('connection', (socket) => {
 		console.log('message: ' + msg);
 		io.emit('chat message', msg);
 	});
+	socket.on('boardClick', (msg) => {
+		console.log('boardClick: ' + msg);
+		io.emit('boardClick', msg);
+	});
 });
 
 http.listen(3000, () => {

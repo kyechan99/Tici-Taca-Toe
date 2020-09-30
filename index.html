@@ -14,12 +14,12 @@
 		<div class="row">
 		  <div class="col-lg-8 game-col">
 			<div class="row">
-				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i">
+				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i" :id="`board-area-${i}`">
 					<div>
 					<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
 						<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
-							<button class="btn btn-primary board" v-on:click="boardClick(`${i},${n},${m}`)">
-								{{ i }}:({{ n }},{{ m }})
+							<button class="btn btn-primary board" v-on:click="boardClick(`${i}${n}${m}${boardAreaNum(n, m)}`)" :id="`${i}${n}${m}`">
+								{{ i }}:({{ n }},{{ m }}_{{ boardAreaNum(n, m) }})
 							</button>
 						</div>
 					</div>
