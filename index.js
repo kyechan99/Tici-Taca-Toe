@@ -41,6 +41,9 @@ io.on('connection', (socket) => {
 		console.log('message: ' + msg);
 		io.to(roomCode).emit('chat message', socket.id, msg);
 	});
+	socket.on('system message', () => {
+		
+	});
 	socket.on('boardClick', (msg) => {
 		console.log('boardClick: ' + msg);
 		io.emit('boardClick', msg);

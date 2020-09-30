@@ -33,25 +33,41 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
     width: calc(100% - 2rem);
 	bottom: 0px;
 }
+.chat-col .system-msg {
+	opacity: 0.5;
+}
 
-@keyframes targeting {
+@keyframes my-targeting {
     from, to {    
         border-color: transparent;
 		background-color: transparent;
     }    
     50% {    
         border-color: black ;
-		background-color: tomato;   
+		background-color: #b897ff;
+    } 
+}
+@keyframes enemy-targeting {
+    from, to {    
+        border-color: transparent;
+		background-color: transparent;
+    }    
+    50% {    
+        border-color: black ;
+		background-color: #ba7967;   
     } 
 }
 .game-col .board-area {
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
-.game-col .board-area.targeting {
-    /* border:1px solid black; */
-    -webkit-animation: targeting 2s infinite;    
-    animation: targeting 2s infinite;  
+.game-col .board-area.my-targeting {
+    -webkit-animation: my-targeting 2s infinite;    
+    animation: my-targeting 2s infinite;  
+}
+.game-col .board-area.enemy-targeting {
+    -webkit-animation: enemy-targeting 2s infinite;    
+    animation: enemy-targeting 2s infinite;  
 }
 .game-col .board-area.disabled .btn {
 	cursor: not-allowed;
@@ -68,13 +84,10 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 	width: 100%;
 	height: 5rem;
 }
+.game-col .board-area .board-area-row .board-block .board.btn-primary,
 .game-col .board-area .board-area-row .board-block .board.btn-brown {
 	cursor: not-allowed;
 	pointer-events: none;
 }
-@media (max-width: 768px) {
-	.game-col .board-area .board-area-row .board-block .board {
-		/* width: 3rem;
-		height: 3rem; */
-	};
-}
+/* @media (max-width: 768px) {
+} */
