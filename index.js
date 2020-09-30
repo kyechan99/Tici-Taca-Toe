@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 	});
 	socket.on('board click', (msg) => {
 		console.log('boardClick: ' + msg);
-		io.emit('boardClick', msg);
+		io.emit('board click', msg);
 	});
 	socket.on('disconnect', function() {
 		console.log(socket.id + ' disconnected..');

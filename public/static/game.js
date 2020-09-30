@@ -149,9 +149,51 @@ var app = new Vue({
 		 */
 		writeBoardData(bPos) {
 			let boardAreaNum = Number(bPos.substr(0, 1)) - 1;
-			let n = bPos.substr(1, 1);
-			let m = bPos.substr(2, 1);
+			let n = Number(bPos.substr(1, 1));
+			let m = Number(bPos.substr(2, 1));
 			this.boardData[boardAreaNum].boards[n+':'+m] = this.myTurn ? 'ME' : 'ENEMY';
+			this.checkBoardOwner(boardAreaNum, n, m);
+		},
+		/**
+		 * checkBoardOwner
+		 * @desc : Check Who is owner about board-area
+		 * @param boardAreaNum : board-area index
+		 * @param n : pos-y
+		 * @param m : pos-x
+		 */
+		checkBoardOwner(boardAreaNum, n, m) {
+			let countMyBlock = 0;
+			for (let i = 1; i < this.BOARD_SIZE+1; i++) {
+				// Horizontal Check
+				countMyBlock = 0;
+				for (let j = 1; j < this.BOARD_SIZE+1; j++) {
+					if (this.boardData[boardAreaNum].boards[i+':'+j] === 'ME')
+						countMyBlock++;
+					else break;
+				}
+				
+				// Check if it is finished
+				if (countMyBlock === this.BOARD_SIZE)
+					break;
+				
+				// Vertical Check
+				countMyBlock = 0;
+				for (let j = 1; j < this.BOARD_SIZE+1; j++) {
+					if (this.boardData[boardAreaNum].boards[j+':'+i] === 'ME')
+						countMyBlock++;
+					else break;
+				}
+				
+				// Check if it is finished
+				if (countMyBlock === this.BOARD_SIZE)
+					break;
+			}
+			
+			// If board is finished. board-area(big board) is mine.
+			if (countMyBlock === this.BOARD_SIZE) {
+				this.boardData[boardAreaNum].owner = 'ME';
+				$('#messages').append($('<li class="system-msg">').text(boardAreaNum + ' is done.'));
+			}
 		}
 	}
 })
