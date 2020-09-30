@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Tici-Taca-Toe</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="/static/yuri.css">
+	  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"> -->
+	<link rel="stylesheet" href="/static/index.css">
+  </head>
+  <body>
+	<div class="container-fluid" id="app">
+	  <h1 class="text-center">Tici-Taca-Toe {{ myName }}</h1>
+		<div class="row">
+		  <div class="col-lg-8 game-col">
+			<div class="row">
+				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i" :id="`board-area-${i}`">
+					<div>
+					<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
+						<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
+							<button class="btn btn-primary board" v-on:click="boardClick(`${i}${n}${m}${boardAreaNum(n, m)}`)" :id="`${i}${n}${m}${boardAreaNum(n, m)}`">
+								{{ i }}:({{ n }},{{ m }}_{{ boardAreaNum(n, m) }})
+							</button>
+						</div>
+					</div>
+						
+					</div>
+				</div>
+			</div>
+		  </div>
+		  <div class="col chat-col">
+			<ul class="messages" id="messages">
+			  </ul>
+			  <form class="messages-form" action="" @submit.prevent="chatSubmit">
+				<input id="m" autocomplete="off" /><button>&gt;</button>
+			  </form>
+			</div>
+		  </div>
+	  </div>
+
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="/static/index.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+</html>

@@ -2,11 +2,10 @@ form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
 form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 
 .game-col {
-	background-color: tomato;
+	/* background-color: tomato; */
 }
 .chat-col {
-	background-color: skyblue;
-	/* height: 100%; */
+	/* background-color: skyblue; */
 }
 .chat-col .messages {
 	margin: 0;
@@ -30,10 +29,12 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 
 @keyframes targeting {
     from, to {    
-        border-color: transparent    
+        border-color: transparent;
+		background-color: transparent;
     }    
     50% {    
-        border-color: black    
+        border-color: black ;
+		background-color: tomato;   
     } 
 }
 .game-col .board-area {
@@ -41,11 +42,11 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 	padding-bottom: 5px;
 }
 .game-col .board-area.targeting {
-    border:1px solid black;
+    /* border:1px solid black; */
     -webkit-animation: targeting 2s infinite;    
     animation: targeting 2s infinite;  
 }
-.game-col .board-area.disabled button {
+.game-col .board-area.disabled .btn {
 	cursor: not-allowed;
 	pointer-events: none;
 }
@@ -59,6 +60,10 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 .game-col .board-area .board-area-row .board-block .board {
 	width: 100%;
 	height: 5rem;
+}
+.game-col .board-area .board-area-row .board-block .board.btn-brown {
+	cursor: not-allowed;
+	pointer-events: none;
 }
 @media (max-width: 768px) {
 	.game-col .board-area .board-area-row .board-block .board {

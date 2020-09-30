@@ -9,35 +9,22 @@
 	<link rel="stylesheet" href="/static/index.css">
   </head>
   <body>
-	<div class="container-fluid" id="app">
-	  <!-- <h1 class="text-center">Tici-Taca-Toe {{ message }}</h1> -->
-		<div class="row">
-		  <div class="col-lg-8 game-col">
-			<div class="row">
-				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i" :id="`board-area-${i}`">
-					<div>
-					<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
-						<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
-							<button class="btn btn-primary board" v-on:click="boardClick(`${i}${n}${m}${boardAreaNum(n, m)}`)" :id="`${i}${n}${m}${boardAreaNum(n, m)}`">
-								{{ i }}:({{ n }},{{ m }}_{{ boardAreaNum(n, m) }})
-							</button>
+	<div class="container" id="app">
+		<div class="card" style="margin-top:20%;">
+			<div class="card-body" style="padding-top: 5rem; padding-bottom: 5rem;">
+				<h1 class="text-center">Tici-Taca-Toe</h1>
+				<div class="form-group row justify-center">
+					<div class="col-sm-5">
+						<input type="text" class="form-control" id="nickname" placeholder="Ninkname" style="margin-top: 3rem; margin-bottom: 3rem;">
+						<div class="dsp-flex justify-around">
+							<button class="btn btn-primary" style="width:49%;">Create</button>
+							<button class="btn btn-primary" style="width:49%;">Join</button>
 						</div>
-					</div>
-						
 					</div>
 				</div>
 			</div>
-		  </div>
-		  <div class="col chat-col">
-			<ul class="messages" id="messages">
-			  </ul>
-			  <form class="messages-form" action="">
-				<input id="m" autocomplete="off" /><button>&gt;</button>
-			  </form>
-			</div>
-		  </div>
-	  </div>
-
+		</div>
+	</div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
