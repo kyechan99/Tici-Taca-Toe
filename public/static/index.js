@@ -16,9 +16,19 @@ $(function () {
 		$('#' + msg).addClass('btn-brown');
 		if (beforeArea !== 0) {
 			$('#board-area-' + beforeArea).removeClass('targeting');
+			// $('#board-area-' + beforeArea).removeClass('disabled');
 		}
-		$('#board-area-' + msg.substring(3,4)).addClass('targeting');
 		beforeArea = msg.substring(3,4);
+		$('#board-area-' + beforeArea).addClass('targeting');
+				// $('#board-area-' + i).removeClass('disabled');
+		for (let i = 1; i < 10; i++) {
+			if (Number(beforeArea) !== i) {
+				$('#board-area-' + i).addClass('disabled');
+			} else {
+				$('#board-area-' + i).removeClass('disabled');
+			}
+		}
+		// beforeArea = msg.substring(3,4);
 		// console.log(msg.substring(3,4));
     });
 });

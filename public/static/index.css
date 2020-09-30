@@ -27,6 +27,7 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
     width: calc(100% - 2rem);
 	bottom: 0px;
 }
+
 @keyframes targeting {
     from, to {    
         border-color: transparent    
@@ -43,6 +44,10 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
     border:1px solid black;
     -webkit-animation: targeting 2s infinite;    
     animation: targeting 2s infinite;  
+}
+.game-col .board-area.disabled button {
+	cursor: not-allowed;
+	pointer-events: none;
 }
 .game-col .board-area .board-area-row {
 	padding-left: 5px;
