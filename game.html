@@ -12,18 +12,17 @@
 	<div class="container-fluid" id="app">
 	  <h1 class="text-center">Tici-Taca-Toe {{ roomCode }}</h1>
 		<div class="row">
-		  <div class="col-lg-8 game-col">
+		  <div class="col-lg-8 game-col" id="game-col">
 			<div class="row">
 				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i" :id="`board-area-${i}`">
-					<div>
-					<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
-						<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
-							<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)" :id="`${i}${n}${m}${getBoardAreaNum(n, m)}`">
-								{{ i }}:({{ n }},{{ m }}_{{ getBoardAreaNum(n, m) }})
-							</button>
+					<div class="board-area-box">
+						<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
+							<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
+								<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)" :id="`${i}${n}${m}${getBoardAreaNum(n, m)}`">
+									{{ i }}:({{ n }},{{ m }}_{{ getBoardAreaNum(n, m) }})
+								</button>
+							</div>
 						</div>
-					</div>
-						
 					</div>
 				</div>
 				<div class="lock-board-area" v-if="!myTurn">
