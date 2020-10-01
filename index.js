@@ -20,6 +20,7 @@ io.on('connection', (socket) => {
 		io.of('/').in(roomCode).clients((err, clients) => {
 			if (clients.length < 2) {
 				socket.join(roomCode);
+				socket.roomCode = roomCode;
 				console.log(socket.id + ' join in ' + roomCode);
 				
 				if (clients.length > 0) {
@@ -46,6 +47,14 @@ io.on('connection', (socket) => {
 		io.emit('board click', msg);
 	});
 	socket.on('disconnect', function() {
+		console.log(socket.roomCode);
+		io.of('/').in(socket.roomCode).clients((err, clients) => {
+			for (let i = 0; i < clients.length; i++) {
+				if (clients[i] !== socket.id) {
+					io.to(clients[i]).emit('leave enemy');
+				}
+			}
+		});
 		console.log(socket.id + ' disconnected..');
 	});
 });

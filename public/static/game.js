@@ -5,7 +5,8 @@ var app = new Vue({
 		myTurn: false,
 		beforeArea: 0,
 		roomCode: '',
-		boardData: []
+		boardData: [],
+		responsiveChat: true
 	},
 	created() {
 		// Init
@@ -80,7 +81,7 @@ var app = new Vue({
 		
 		// Game Start
 		this.$socket.on('game start', (firstSocketId) => {
-			$('#messages').append($('<li class="system-msg">').text('Game Start !'));
+			$('#messages').append($('<li class="system-msg">').text('<===    Game Start    ===>'));
 			if (firstSocketId === this.$socket.id) {
 				this.myTurn = true;
 				this.myTurnMsg();
@@ -91,11 +92,23 @@ var app = new Vue({
 			}
 		});
 		
+		// Game End
 		this.$socket.on('game end', () => {
 			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
 			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
 			this.myTurn = false;
 		});
+		
+		// Enemy has left
+		this.$socket.on('leave enemy', () => {
+			this.systemMsg('<===    GAME END    ===>');
+			this.systemMsg('The Enemy has left !!');
+			$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
+			
+			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
+			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
+			this.myTurn = false;
+		})
 		
 		// Out room (Called when the room is full)
 		this.$socket.on('out room', () => {
@@ -118,8 +131,7 @@ var app = new Vue({
 						this.boardData[i].boards[n + ':' + m] = undefined;
 					}
 				}
-			}		
-			console.log(this.boardData);
+			}
 		},
 		/**
 		 * boardClick
@@ -325,6 +337,16 @@ var app = new Vue({
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
 			else
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-brown">enemy</span> win !</li>'));
+		},
+		copyUrl() {
+			var dummy = document.createElement('input');
+			var text = window.location.href;
+
+			document.body.appendChild(dummy);
+			dummy.value = text;
+			dummy.select();
+			document.execCommand('copy');
+			document.body.removeChild(dummy);
 		}
 	}
 })

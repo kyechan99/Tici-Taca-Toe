@@ -10,7 +10,10 @@
   </head>
   <body>
 	<div class="container-fluid" id="app">
-	  <h1 class="text-center">Tici-Taca-Toe {{ roomCode }}</h1>
+	    <h1 class="title text-center">
+			Tici-Taca-Toe
+		</h1>
+		<span class="desc text-center" v-on:click="copyUrl()">room code : {{ roomCode }}</span>
 		<div class="row">
 		  <div class="col-lg-8 game-col" id="game-col">
 			<div class="row">
@@ -19,7 +22,7 @@
 						<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
 							<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
 								<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)" :id="`${i}${n}${m}${getBoardAreaNum(n, m)}`">
-									{{ i }}:({{ n }},{{ m }}_{{ getBoardAreaNum(n, m) }})
+									
 								</button>
 							</div>
 						</div>
@@ -29,14 +32,19 @@
 				</div>
 			</div>
 		  </div>
-		  <div class="col chat-col">
-			<ul class="messages" id="messages">
-			  </ul>
+		  <div class="col chat-col" v-if="responsiveChat">
+			  <ul class="messages" id="messages"></ul>
+			  <button type="button" class="btn close show-lg" v-on:click="responsiveChat = false">
+				<span>&times;</span>
+			  </button>
 			  <form class="messages-form" action="" @submit.prevent="chatSubmit">
 				<input id="m" autocomplete="off" /><button>&gt;</button>
 			  </form>
 			</div>
 		  </div>
+		  <button type="button" class="btn btn-block" v-if="!responsiveChat" v-on:click="responsiveChat = true">
+			<span>Show Chat</span>
+		  </button>
 	  </div>
 
   </body>
