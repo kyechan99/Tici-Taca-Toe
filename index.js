@@ -15,9 +15,16 @@ app.get('/autoMatch', (req, res, next) => {
 		res.redirect('/' + roomsData[Math.floor(Math.random() * roomsData.length)]);
 	}
 	else {
-		res.redirect('/');
+		res.redirect('/?msg=no-rooms');
 	}
 });
+app.get('/createRoom', (req, res) => {
+	let roomCode = generateRandomRoomCode();
+	while (roomsData.includes(roomCode)) {
+		roomCode = generateRandomRoomCode();
+	}
+	res.redirect('/' + roomCode);
+})
 app.get('/:roomCode', (req, res) => {
 	res.sendFile(__dirname + '/game.html');
 });
@@ -76,6 +83,15 @@ io.on('connection', (socket) => {
 	});
 });
 
+
+function generateRandomRoomCode() {
+	var letters = '0123456789ABCDEF';
+	var roomCode = '';
+	for (var i = 0; i < 6; i++) {
+	  roomCode += letters[Math.floor(Math.random() * 16)];
+	}
+	return roomCode;
+}
 
 http.listen(3000, () => {
 	console.log('listening on *:3000');

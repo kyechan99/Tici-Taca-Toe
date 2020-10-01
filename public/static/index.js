@@ -7,13 +7,5 @@ var app = new Vue({
 	created() {
 	},
 	methods: {
-		generateRandomRoomCode() {
-			var letters = '0123456789ABCDEF';
-			var roomCode = '';
-			for (var i = 0; i < 6; i++) {
-			  roomCode += letters[Math.floor(Math.random() * 16)];
-			}
-			return roomCode;
-		}
 	}
 })
