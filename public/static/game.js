@@ -24,15 +24,14 @@ var app = new Vue({
 		this.$socket.on('chat message', (id, msg) => {
 			// Check who send it
 			if (id === this.$socket.id)
-				$('#messages').append($(`<li><span class='badge badge-primary'>Your</span> : ${msg}</li>`));
+				 $('#messages').append($(`<li><span class='badge badge-primary'>Your</span> : ${msg}</li>`));
 			else
-				$('#messages').append($(`<li><span class='badge badge-brown'>Enemy</span> : ${msg}</li>`));
+				 $('#messages').append($(`<li><span class='badge badge-brown'>Enemy</span> : ${msg}</li>`));
+			$('#messages').scrollTop($('#messages').height());
 		})
 		
 		// Board Click
 		this.$socket.on('board click', (msg) => {
-			$('#messages').append($('<li>').text(msg));
-			
 			// Save board data
 			this.writeBoardData(msg);
 			
@@ -82,6 +81,7 @@ var app = new Vue({
 		// Game Start
 		this.$socket.on('game start', (firstSocketId) => {
 			$('#messages').append($('<li class="system-msg">').text('<===    Game Start    ===>'));
+			$('#messages').scrollTop($('#messages').height());
 			if (firstSocketId === this.$socket.id) {
 				this.myTurn = true;
 				this.myTurnMsg();
@@ -97,6 +97,7 @@ var app = new Vue({
 			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
 			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
 			this.myTurn = false;
+			this.systemMsg('<================>');
 		});
 		
 		// Enemy has left
@@ -104,6 +105,7 @@ var app = new Vue({
 			this.systemMsg('<===    GAME END    ===>');
 			this.systemMsg('The Enemy has left !!');
 			$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
+			$('#messages').scrollTop($('#messages').height());
 			
 			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
 			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
@@ -157,7 +159,7 @@ var app = new Vue({
 		 * @param msg : chatting message(not used)
 		 */
 		chatSubmit(msg) {
-			this.$socket.emit('chat message', this.roomCode, $('#m').val());
+			this.$socket.emit('chat message', $('#m').val());
 			$('#m').val('');
 		},
 		/**
@@ -166,6 +168,7 @@ var app = new Vue({
 		 */
 		myTurnMsg() {
 			$('#messages').append($('<li class="system-msg">Now <span class="badge badge-primary">your</span> Turn !</li>'));
+			$('#messages').scrollTop($('#messages').height());
 		},
 		/**
 		 * enemyTurnMsg
@@ -173,6 +176,7 @@ var app = new Vue({
 		 */
 		enemyTurnMsg() {
 			$('#messages').append($('<li class="system-msg">Now <span class="badge badge-brown">enemy</span> Turn !</li>'));
+			$('#messages').scrollTop($('#messages').height());
 		},
 		/**
 		 * systemMsg
@@ -181,6 +185,7 @@ var app = new Vue({
 		 */
 		systemMsg(msg) {
 			$('#messages').append($('<li class="system-msg">').text(msg));
+			$('#messages').scrollTop($('#messages').height());
 		},
 		/**
 		 * writeBoardData
@@ -246,9 +251,10 @@ var app = new Vue({
 			
 			// If board is finished. board-area(big board) is mine.
 			if (countMyBlock === this.BOARD_SIZE) {
-				console.log(countMyBlock);
+				$('#board-area-' + (boardAreaNum + 1)).addClass('done');
 				this.boardData[boardAreaNum].owner = owner;
 				$('#messages').append($('<li class="system-msg">').text(boardAreaNum + 1 + '\s block is done.'));
+				$('#messages').scrollTop($('#messages').height());
 				this.checkWinner(owner);
 			}
 			
@@ -261,8 +267,10 @@ var app = new Vue({
 				}
 			}
 			if (countMyBlock) {
+				$('#board-area-' + (boardAreaNum + 1)).addClass('done');
 				this.boardData[boardAreaNum].owner = 'NOONE';
 				$('#messages').append($('<li class="system-msg">').text(boardAreaNum + 1 + '\s block is no-one.'));
+				$('#messages').scrollTop($('#messages').height());
 				this.checkWinner(owner);
 			}
 		},
@@ -274,7 +282,6 @@ var app = new Vue({
 		 * @param m : pos-x
 		 */
 		checkWinner(owner) {
-			console.log('checkwinner ' + owner);
 			let countBoardOwner = 0;
 			for (let i = 0; i < this.BOARD_SIZE; i++) {
 				// Horizontal Check
@@ -283,7 +290,6 @@ var app = new Vue({
 					else break;
 				}
 				if (countBoardOwner === this.BOARD_SIZE) {
-			console.log('here 0  ');
 					this.gameEnd();
 					return;
 				}
@@ -295,7 +301,6 @@ var app = new Vue({
 					else break;
 				}
 				if (countBoardOwner === this.BOARD_SIZE) {
-			console.log('here 1  ');
 					this.gameEnd();
 					return;
 				}
@@ -308,7 +313,6 @@ var app = new Vue({
 				else break;
 			}
 			if (countBoardOwner === this.BOARD_SIZE) {
-			console.log('here 2  ');
 				this.gameEnd();
 				return;
 			}
@@ -320,10 +324,15 @@ var app = new Vue({
 				else break;
 			}
 			if (countBoardOwner === this.BOARD_SIZE) {
-			console.log('here 3  ');
 				this.gameEnd();
 				return;
 			}
+			
+			// Check is it draw
+			for (let i = 0; i < this.BOARD_SIZE * this.BOARD_SIZE; i++) {
+				if (this.boardData[i].owner !== undefined) return;
+			}
+			this.drawEnd();
 		},
 		/**
 		 * gameEnd
@@ -337,7 +346,23 @@ var app = new Vue({
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
 			else
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-brown">enemy</span> win !</li>'));
+			$('#messages').scrollTop($('#messages').height());
 		},
+		/**
+		 * drawEnd
+		 * @desc : Draw End
+		 */
+		drawEnd() {
+			this.$socket.emit('game end');
+			this.systemMsg('<=== GAME END ===>');
+			
+			$('#messages').append($('<li class="system-msg"><span class="badge badge-info">Draw</span> !!!</li>'));
+			$('#messages').scrollTop($('#messages').height());
+		},
+		/**
+		 * copyUrl
+		 * @desc : Copy Url clipboard
+		 */
 		copyUrl() {
 			var dummy = document.createElement('input');
 			var text = window.location.href;

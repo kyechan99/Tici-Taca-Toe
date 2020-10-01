@@ -7,7 +7,7 @@
 		background-color: transparent;
     }    
     50% {    
-		background-color: #b897ff8f;
+		background-color: #b897ffaf;
     } 
 }
 @keyframes enemy-targeting {
@@ -60,6 +60,7 @@
     width: calc(100% - 2rem);
 	bottom: 0px;
 	border: 1.5px solid #757572;
+	background-color: white;
 }
 .chat-col .messages-form input {
 	border: 0;
@@ -112,6 +113,9 @@
 }
 .game-col.my-targeting .board-area.disabled .board-area-box,
 .game-col.enemy-targeting .board-area.disabled .board-area-box {
+	opacity: 0.5;
+}
+.game-col .board-area.done .board-area-box {
 	opacity: 0.5;
 }
 .game-col .board-area {

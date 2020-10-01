@@ -31,8 +31,7 @@ app.get('/:roomCode', (req, res) => {
 
 
 io.on('connection', (socket) => {
-	socket.broadcast.emit('hi');
-	console.log(socket.id + ' user connected');
+	// console.log(socket.id + ' user connected');
 	
 	socket.on('join room', (roomCode) => {
 		io.of('/').in(roomCode).clients((err, clients) => {
@@ -55,18 +54,25 @@ io.on('connection', (socket) => {
 				// Full Memeber
 				io.to(socket.id).emit('out room');
 			}
-			console.log(clients);
+			// console.log(clients);
 		});
-		console.log(socket.id + ' join in ' + roomCode);
+		// console.log(socket.id + ' join in ' + roomCode);
 	});
-	socket.on('chat message', (roomCode, msg) => {
-		console.log('message: ' + msg);
-		io.to(roomCode).emit('chat message', socket.id, msg);
+	
+	socket.on('chat message', (msg) => {
+		// console.log('message: ' + msg);
+		io.to(socket.roomCode).emit('chat message', socket.id, msg);
 	});
+	
 	socket.on('board click', (msg) => {
-		console.log('boardClick: ' + msg);
+		// console.log('boardClick: ' + msg);
 		io.emit('board click', msg);
 	});
+	
+	socket.on('game end', (msg) => {
+		io.to(socket.roomCode).emit('game end');
+	});
+	
 	socket.on('disconnect', function() {
 		io.of('/').in(socket.roomCode).clients((err, clients) => {
 			for (let i = 0; i < clients.length; i++) {
@@ -79,7 +85,7 @@ io.on('connection', (socket) => {
 				roomsData.splice(roomsData.indexOf(socket.roomCode), 1);
 			}
 		});
-		console.log(socket.id + ' disconnected..');
+		// console.log(socket.id + ' disconnected..');
 	});
 });
 
