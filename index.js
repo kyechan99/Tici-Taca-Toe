@@ -3,14 +3,25 @@ var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+const roomsData = [];
+
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
+app.get('/autoMatch', (req, res, next) => {
+	if (roomsData.length > 0) {
+		res.redirect('/' + roomsData[Math.floor(Math.random() * roomsData.length)]);
+	}
+	else {
+		res.redirect('/');
+	}
+});
 app.get('/:roomCode', (req, res) => {
 	res.sendFile(__dirname + '/game.html');
 });
+
 
 io.on('connection', (socket) => {
 	socket.broadcast.emit('hi');
@@ -18,13 +29,15 @@ io.on('connection', (socket) => {
 	
 	socket.on('join room', (roomCode) => {
 		io.of('/').in(roomCode).clients((err, clients) => {
+			if (clients.length === 0)
+				roomsData.push(roomCode);
+			
 			if (clients.length < 2) {
 				socket.join(roomCode);
 				socket.roomCode = roomCode;
-				console.log(socket.id + ' join in ' + roomCode);
 				
 				if (clients.length > 0) {
-					// Who is first? random
+					// Who is first play? random
 					let random = Math.floor(Math.random() * 2);
 					if (random === 0)
 						io.to(roomCode).emit('game start', clients[0]);
@@ -37,6 +50,7 @@ io.on('connection', (socket) => {
 			}
 			console.log(clients);
 		});
+		console.log(socket.id + ' join in ' + roomCode);
 	});
 	socket.on('chat message', (roomCode, msg) => {
 		console.log('message: ' + msg);
@@ -47,12 +61,15 @@ io.on('connection', (socket) => {
 		io.emit('board click', msg);
 	});
 	socket.on('disconnect', function() {
-		console.log(socket.roomCode);
 		io.of('/').in(socket.roomCode).clients((err, clients) => {
 			for (let i = 0; i < clients.length; i++) {
 				if (clients[i] !== socket.id) {
 					io.to(clients[i]).emit('leave enemy');
 				}
+			}
+			// It means alone
+			if (clients.length === 0) {
+				roomsData.splice(roomsData.indexOf(socket.roomCode), 1);
 			}
 		});
 		console.log(socket.id + ' disconnected..');
