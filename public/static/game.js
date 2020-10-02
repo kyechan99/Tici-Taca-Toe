@@ -1,3 +1,4 @@
+
 var app = new Vue({
 	el: '#app',
 	data: {
@@ -119,8 +120,6 @@ var app = new Vue({
 		
 		// Replay Game
 		this.$socket.on('replay', (firstPlayerId) => {
-			this.isGameEnd = false;
-			this.initBoardData();
 			this.gameStart(firstPlayerId);
 		})
 		
@@ -167,6 +166,9 @@ var app = new Vue({
 		 * @param firstPlayerId : who is first play ($socket.id)
 		 */
 		gameStart(firstPlayerId) {
+			this.isGameEnd = false;
+			this.initBoardData();
+			
 			$('#messages').append($('<li class="system-msg">').text('<===    Game Start    ===>'));
 			$('#messages').scrollTop($('#messages').height());
 			if (firstPlayerId === this.$socket.id) {

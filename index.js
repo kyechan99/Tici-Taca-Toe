@@ -45,7 +45,10 @@ io.on('connection', (socket) => {
 				if (clients.length > 0) {
 					// Who is first play? random
 					let random = Math.floor(Math.random() * 2);
-					io.to(roomCode).emit('game start', clients[random]);
+					if (random === 0)
+						io.to(roomCode).emit('game start', clients[0]);
+					else
+						io.to(roomCode).emit('game start', socket.id);
 				}
 			} else {
 				// Full Memeber

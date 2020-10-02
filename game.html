@@ -13,7 +13,7 @@
 	    <h1 class="title text-center">
 			Tici-Taca-Toe
 		</h1>
-		<span class="desc text-center" v-on:click="copyUrl()">room code : {{ roomCode }}</span>
+		<span class="desc text-center" v-on:click="copyUrl()">Copy room code : {{ roomCode }}</span>
 		<div class="row">
 		  <div class="col-lg-8 game-col" :class="gameColTargeting()">
 			<div class="row">
@@ -52,7 +52,7 @@
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="/static/game.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
 </html>
