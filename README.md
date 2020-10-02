@@ -1,21 +1,51 @@
-![header](https://capsule-render.vercel.app/api?type=rounded&color=gradient&height=220&section=header&text=%20Tici%20Toci%20Taca%20&fontSize=60&textBg=true)
+![header](https://capsule-render.vercel.app/api?type=rounded&color=gradient&height=220&section=header&text=%20Tici%20Taca%20Toe%20&fontSize=60&textBg=true)
 
 The Ultimate tic tac toe!
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://ticitacatoe.herokuapp.com/)
+
+Play in [Here](https://ticitacatoe.herokuapp.com/) !!
 
 ## How to play?
+
+![help_0](./README/help_0.png)
+
+![help_1](./README/help_1.png)
+
+Ultimate tic-tac-toe is upgrade of tic-tac-toe!
+
+> (3by3) by (3by3)
+
+![help_2](./README/help_2.png)
+
+First player can put it anywhere.
+
+![help_3](./README/help_3.png)
+But next player is determined by where the first player is placed.
+
+For example, first player was put it on the **top right of a small board**.
+
+Then, next player cna put it on the **top right of a large board**.
+
+![help_4](./README/help_4.png)
+
+From now on, it continues like this.
+
+![help_5](./README/help_5.png)
+
+If you have to move to the block that the owner already has,
+
+![help_6](./README/help_6.png)
+
+then you can put it anywhere!
+
+![help_7](./README/help_7.png)
+
+In this way, Winner who made one line first based on a large block.
+
 
 ## 
 
 <!-- ## TODO
-- 게임 재시작
-- 설명서
 - 게임 떠날때 알림
-- 채팅 스크롤
-- 보라색 targeting 색 잘 안보임
-- 안나갔는데 나갓다고 뜸
-- 스크롤 뒤 글자보임
-- 전체 타겟팅에서 완료된 곳에disabled 안되는 부분 있음
-- 모두가 noone 일떄 무승부
 -->
