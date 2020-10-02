@@ -45,10 +45,7 @@ io.on('connection', (socket) => {
 				if (clients.length > 0) {
 					// Who is first play? random
 					let random = Math.floor(Math.random() * 2);
-					if (random === 0)
-						io.to(roomCode).emit('game start', clients[0]);
-					else
-						io.to(roomCode).emit('game start', socket.id);
+					io.to(roomCode).emit('game start', clients[random]);
 				}
 			} else {
 				// Full Memeber
@@ -58,6 +55,16 @@ io.on('connection', (socket) => {
 		});
 		// console.log(socket.id + ' join in ' + roomCode);
 	});
+	
+	socket.on('replay', (roomCode) => {
+		io.of('/').in(roomCode).clients((err, clients) => {
+			if (clients.length === 2) {
+				// Who is first play? random
+				let random = Math.floor(Math.random() * 2);
+				io.to(roomCode).emit('replay', clients[random]);
+			}
+		});
+	})
 	
 	socket.on('chat message', (msg) => {
 		// console.log('message: ' + msg);

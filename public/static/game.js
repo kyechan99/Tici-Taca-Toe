@@ -2,11 +2,53 @@ var app = new Vue({
 	el: '#app',
 	data: {
 		BOARD_SIZE: 3,
+		isGameEnd: false,
 		myTurn: false,
 		beforeArea: 0,
 		roomCode: '',
 		boardData: [],
-		responsiveChat: true
+		responsiveChat: true,
+		isGameColTarget: false,		// game-col targeting (all active)
+		targetArea: -1				// target-area
+	},
+	computed: {
+		boardOwner() {
+			return (i, n, m) => {
+				if (this.boardData[i-1].boards[n+':'+m] === 'ME')
+					return 'btn-primary';
+				else if (this.boardData[i-1].boards[n+':'+m] === 'ENEMY')
+					return 'btn-brown';
+				return '';
+			}
+		},
+		boardAreaOwner() {
+			return (i) => {
+				if (this.boardData[i-1].owner !== undefined)
+					return 'done';
+				return '';
+			}
+		},
+		gameColTargeting() {
+			return () => {
+				if (this.isGameColTarget)
+					return (this.myTurn ? 'my' : 'enemy')+'-targeting';
+				return '';
+			}
+		},
+		boardActive() {
+			return (i) => {
+				if (this.targetArea === -1 || this.targetArea == i)
+					return 'active';
+				return '';
+			}
+		},
+		boardTargeting() {
+			return (i) => {
+				if (!this.isGameColTarget && this.targetArea == i)
+					return (this.myTurn ? 'my' : 'enemy')+'-targeting';
+				return '';
+			}
+		}
 	},
 	created() {
 		// Init
@@ -31,91 +73,71 @@ var app = new Vue({
 		})
 		
 		// Board Click
-		this.$socket.on('board click', (msg) => {
+		this.$socket.on('board click', (boardData) => {
 			// Save board data
-			this.writeBoardData(msg);
+			this.writeBoardData(boardData);
 			
-			// Show system message and who's owner about board
-			if (this.myTurn) {
-				$('#' + msg).addClass('btn-primary');
-				this.enemyTurnMsg();
-			} else {
-				$('#' + msg).addClass('btn-brown');
-				this.myTurnMsg();
+			// Check Board Owner to send boardAreaNum
+			if (!this.checkBoardOwner(Number(boardData.substr(0, 1)) - 1)) {
+				// Game is not end
+				if (this.myTurn) {
+					this.enemyTurnMsg();
+				} else {
+					this.myTurnMsg();
+				}
 			}
 			
 			// Remove before board-area targeting animation
-			if (this.beforeArea !== 0)
-				$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
-			else
-				$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
+			if (this.beforeArea === 0)
+				this.isGameColTarget = false;
 			
-			this.beforeArea = msg.substring(3,4);
+			this.beforeArea = boardData.substring(3,4);
 			if (this.boardData[Number(this.beforeArea)-1].owner === undefined) {
 				// Show current board-area targeting animation
-				$('#board-area-' + this.beforeArea).addClass((this.myTurn ? 'enemy' : 'my')+'-targeting');
-
-				// Disabled for non-target board-area
-				for (let i = 1; i < this.BOARD_SIZE * this.BOARD_SIZE + 1; i++) {
-					if (Number(this.beforeArea) !== i) {
-						$('#board-area-' + i).addClass('disabled');
-					} else {
-						$('#board-area-' + i).removeClass('disabled');
-					}
-				}
+				this.targetArea = this.beforeArea;
 			} else {
-				this.beforeArea = 0;
-				$('#game-col').addClass((this.myTurn ? 'enemy' : 'my')+'-targeting');
 				// Open all board-area except where the owner has.
-				for (let i = 1; i < this.BOARD_SIZE * this.BOARD_SIZE + 1; i++) {
-					if (this.boardData[i-1].owner === undefined) {
-						$('#board-area-' + i).removeClass('disabled');
-					}
-				}
+				this.beforeArea = 0;
+				this.isGameColTarget = true;
+				this.targetArea = -1;
 			}
 			
 			// Now change turn
 			this.myTurn = !this.myTurn;
+			console.log(this.boardData);
 		});
 		
 		// Game Start
-		this.$socket.on('game start', (firstSocketId) => {
-			$('#messages').append($('<li class="system-msg">').text('<===    Game Start    ===>'));
-			$('#messages').scrollTop($('#messages').height());
-			if (firstSocketId === this.$socket.id) {
-				this.myTurn = true;
-				this.myTurnMsg();
-				$('#game-col').addClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
-			} else {
-				this.myTurn = false;
-				this.enemyTurnMsg();
-			}
+		this.$socket.on('game start', (firstPlayerId) => {
+			this.gameStart(firstPlayerId);
 		});
 		
 		// Game End
 		this.$socket.on('game end', () => {
-			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
-			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
-			this.myTurn = false;
-			this.systemMsg('<================>');
+			this.gameEndData();
 		});
+		
+		// Replay Game
+		this.$socket.on('replay', (firstPlayerId) => {
+			this.isGameEnd = false;
+			this.initBoardData();
+			this.gameStart(firstPlayerId);
+		})
 		
 		// Enemy has left
 		this.$socket.on('leave enemy', () => {
 			this.systemMsg('<===    GAME END    ===>');
 			this.systemMsg('The Enemy has left !!');
 			$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
-			$('#messages').scrollTop($('#messages').height());
 			
-			$('#board-area-' + this.beforeArea).removeClass((this.myTurn ? 'my' : 'enemy') + '-targeting');
-			$('#game-col').removeClass((this.myTurn ? 'my' : 'enemy')+'-targeting');
-			this.myTurn = false;
+			this.gameEndData();
 		})
 		
 		// Out room (Called when the room is full)
 		this.$socket.on('out room', () => {
 			window.location.href = '/';
 		})
+		
 	},
 	methods: {
 		/**
@@ -123,6 +145,10 @@ var app = new Vue({
 		 * @desc : Init Board Data
 		 */
 		initBoardData() {
+			this.beforeArea = 0;
+			this.responsiveChat = true;
+			this.isGameColTarget = false;
+			this.targetArea = -1;
 			for (var i = 0; i < this.BOARD_SIZE * this.BOARD_SIZE; i++) {
 				this.boardData[i] = {
 					'owner': undefined,
@@ -134,6 +160,24 @@ var app = new Vue({
 					}
 				}
 			}
+		},
+		/**
+		 * gameStart
+		 * @desc : Game Start Data setting
+		 * @param firstPlayerId : who is first play ($socket.id)
+		 */
+		gameStart(firstPlayerId) {
+			$('#messages').append($('<li class="system-msg">').text('<===    Game Start    ===>'));
+			$('#messages').scrollTop($('#messages').height());
+			if (firstPlayerId === this.$socket.id) {
+				this.myTurn = true;
+				this.myTurnMsg();
+				this.isGameColTarget = true;
+			} else {
+				this.myTurn = false;
+				this.enemyTurnMsg();
+			}
+			this.isGameColTarget = true;
 		},
 		/**
 		 * boardClick
@@ -194,11 +238,9 @@ var app = new Vue({
 		 */
 		writeBoardData(bPos) {
 			let boardAreaNum = Number(bPos.substr(0, 1)) - 1;
-			let n = Number(bPos.substr(1, 1));
-			let m = Number(bPos.substr(2, 1));
+			let n = bPos.substr(1, 1);
+			let m = bPos.substr(2, 1);
 			this.boardData[boardAreaNum].boards[n+':'+m] = this.myTurn ? 'ME' : 'ENEMY';
-			this.checkBoardOwner(boardAreaNum, n, m);
-			console.log(this.boardData);
 		},
 		/**
 		 * checkBoardOwner
@@ -207,7 +249,7 @@ var app = new Vue({
 		 * @param n : pos-y
 		 * @param m : pos-x
 		 */
-		checkBoardOwner(boardAreaNum, n, m) {
+		checkBoardOwner(boardAreaNum) {
 			let owner = this.myTurn ? 'ME' : 'ENEMY';
 			let countMyBlock = 0;
 			for (let i = 1; i < this.BOARD_SIZE+1; i++) {
@@ -251,11 +293,10 @@ var app = new Vue({
 			
 			// If board is finished. board-area(big board) is mine.
 			if (countMyBlock === this.BOARD_SIZE) {
-				$('#board-area-' + (boardAreaNum + 1)).addClass('done');
 				this.boardData[boardAreaNum].owner = owner;
 				$('#messages').append($('<li class="system-msg">').text(boardAreaNum + 1 + '\s block is done.'));
 				$('#messages').scrollTop($('#messages').height());
-				this.checkWinner(owner);
+				return this.checkWinner(owner);
 			}
 			
 			// Check no one can't get board-area
@@ -267,12 +308,12 @@ var app = new Vue({
 				}
 			}
 			if (countMyBlock) {
-				$('#board-area-' + (boardAreaNum + 1)).addClass('done');
 				this.boardData[boardAreaNum].owner = 'NOONE';
 				$('#messages').append($('<li class="system-msg">').text(boardAreaNum + 1 + '\s block is no-one.'));
 				$('#messages').scrollTop($('#messages').height());
-				this.checkWinner(owner);
+				return this.checkWinner(owner);
 			}
+			return false;
 		},
 		/**
 		 * checkWinner
@@ -285,13 +326,15 @@ var app = new Vue({
 			let countBoardOwner = 0;
 			for (let i = 0; i < this.BOARD_SIZE; i++) {
 				// Horizontal Check
+				countBoardOwner = 0;
 				for (let j = 0; j < this.BOARD_SIZE; j++) {
 					if (this.boardData[(i * this.BOARD_SIZE) + j].owner === owner) countBoardOwner++;
 					else break;
 				}
 				if (countBoardOwner === this.BOARD_SIZE) {
 					this.gameEnd();
-					return;
+					console.log('1');
+					return true;
 				}
 				
 				// Vertical Check
@@ -302,19 +345,27 @@ var app = new Vue({
 				}
 				if (countBoardOwner === this.BOARD_SIZE) {
 					this.gameEnd();
-					return;
+					console.log('2');
+					return true;
 				}
 			}
 			
 			// Diagonal check (+,+)
 			countBoardOwner = 0;
 			for (let i = 0; i < this.BOARD_SIZE; i++) {
-				if (this.boardData[0 + (i * (this.BOARD_SIZE+1))].owner === owner) countBoardOwner++;
+				// i 0
+				// 0
+				// i 1
+				// 4
+				// i 2
+				// 8
+				if (this.boardData[i * (this.BOARD_SIZE+1)].owner === owner) countBoardOwner++;
 				else break;
 			}
 			if (countBoardOwner === this.BOARD_SIZE) {
 				this.gameEnd();
-				return;
+					console.log('3');
+				return true;
 			}
 			
 			// Diagonal check (-,-)
@@ -325,14 +376,16 @@ var app = new Vue({
 			}
 			if (countBoardOwner === this.BOARD_SIZE) {
 				this.gameEnd();
-				return;
+					console.log('4');
+				return true;
 			}
 			
 			// Check is it draw
 			for (let i = 0; i < this.BOARD_SIZE * this.BOARD_SIZE; i++) {
-				if (this.boardData[i].owner !== undefined) return;
+				if (this.boardData[i].owner === undefined) return false;
 			}
 			this.drawEnd();
+			return true;
 		},
 		/**
 		 * gameEnd
@@ -346,7 +399,18 @@ var app = new Vue({
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-primary">your</span> win !</li>'));
 			else
 				$('#messages').append($('<li class="system-msg"><span class="badge badge-brown">enemy</span> win !</li>'));
-			$('#messages').scrollTop($('#messages').height());
+			this.isGameEnd = true;
+		},
+		/**
+		 * gameEndData
+		 * @desc : setting data on game append
+		 */
+		gameEndData() {
+			this.isGameEnd = true;
+			this.targetArea = -1;
+			this.isGameColTarget = false;
+			this.myTurn = false;
+			this.systemMsg('<================>');
 		},
 		/**
 		 * drawEnd
@@ -357,7 +421,7 @@ var app = new Vue({
 			this.systemMsg('<=== GAME END ===>');
 			
 			$('#messages').append($('<li class="system-msg"><span class="badge badge-info">Draw</span> !!!</li>'));
-			$('#messages').scrollTop($('#messages').height());
+			this.isGameEnd = true;
 		},
 		/**
 		 * copyUrl
@@ -372,6 +436,13 @@ var app = new Vue({
 			dummy.select();
 			document.execCommand('copy');
 			document.body.removeChild(dummy);
+		},
+		/**
+		 * replayBtn
+		 * @desc : Replay
+		 */
+		replayBtn() {
+			this.$socket.emit('replay', this.roomCode);
 		}
 	}
 })

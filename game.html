@@ -15,20 +15,22 @@
 		</h1>
 		<span class="desc text-center" v-on:click="copyUrl()">room code : {{ roomCode }}</span>
 		<div class="row">
-		  <div class="col-lg-8 game-col" id="game-col">
+		  <div class="col-lg-8 game-col" :class="gameColTargeting()">
 			<div class="row">
-				<div class="col-4 board-area" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i" :id="`board-area-${i}`">
+				<div class="col-4 board-area" :class="[boardAreaOwner(i), boardActive(i), boardTargeting(i)]" v-for="i in BOARD_SIZE * BOARD_SIZE" :key="i">
 					<div class="board-area-box">
 						<div class="row board-area-row" v-for="n in BOARD_SIZE" :key="n">
 							<div class="col-4 board-block" v-for="m in BOARD_SIZE" :key="m">
-								<button class="btn board" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)" :id="`${i}${n}${m}${getBoardAreaNum(n, m)}`">
-									
+								<button class="btn board" :class="boardOwner(i,n,m)" v-on:click="boardClick(`${i}${n}${m}${getBoardAreaNum(n, m)}`)">
 								</button>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="lock-board-area" v-if="!myTurn">
+				<div class="lock-board-area" v-if="!myTurn"></div>
+				<div class="game-end-ui dsp-flex" v-if="isGameEnd">
+					<button class="btn btn-success btn-lg align-self-center" v-on:click="replayBtn()" style="margin: 0 auto;">Replay ?</button>
+					<a class="btn btn-danger btn-lg align-self-center" href="/" style="margin: 0 auto;">Exit</a>
 				</div>
 			</div>
 		  </div>

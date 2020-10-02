@@ -106,14 +106,9 @@
     -webkit-animation: enemy-targeting 2s infinite;    
     animation: enemy-targeting 2s infinite;
 }
-.game-col.my-targeting .board-area.disabled,
-.game-col.enemy-targeting .board-area.disabled {
+.game-col .board-area.done {
 	background-color: white;
     border-radius: .25rem;
-}
-.game-col.my-targeting .board-area.disabled .board-area-box,
-.game-col.enemy-targeting .board-area.disabled .board-area-box {
-	opacity: 0.5;
 }
 .game-col .board-area.done .board-area-box {
 	opacity: 0.5;
@@ -129,6 +124,11 @@
 .game-col .board-area.enemy-targeting {
     -webkit-animation: enemy-targeting 2s infinite;    
     animation: enemy-targeting 2s infinite;
+}
+.game-col .board-area:not(.active) .btn,
+.game-col .board-area:not(.active) .btn {
+	cursor: not-allowed;
+	pointer-events: none;
 }
 .game-col .board-area.disabled .btn {
 	cursor: not-allowed;
@@ -147,6 +147,7 @@
 	height: 100%;
 	border: 1px solid #2303362f;
 }
+.game-col .board-area.done .board-area-box .board,
 .game-col .board-area .board-area-row .board-block .board.btn-primary,
 .game-col .board-area .board-area-row .board-block .board.btn-brown {
 	cursor: not-allowed;
@@ -159,6 +160,13 @@
 }
 
 .lock-board-area {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+}
+
+.game-end-ui {
 	position: absolute;
 	width: 100%;
 	height: 100%;
